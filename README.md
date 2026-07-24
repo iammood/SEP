@@ -2,7 +2,7 @@
 
 SEP, is a three-day skills-and-business training event in Lagos (Oct 8–10) run by OneChurch International's Kingdom Impact Team. Free to attend; 975 people came in 2025.
 
-**Live:** seedempowermentprogram.com
+**Live:** [seedempowermentprogram.com](https://www.seedempowermentprogram.com/)
 ---
 <img width="1384" height="822" alt="Screenshot 2026-07-24 at 23 26 18" src="https://github.com/user-attachments/assets/bba6947c-410a-4825-b96c-f1c9ed280f07" />
 
