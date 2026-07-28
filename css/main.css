@@ -217,6 +217,7 @@ img { max-width: 100%; display: block; }
   color: var(--forest-deep);
   margin-bottom: 28px;
   font-variation-settings: "opsz" 144;
+  text-wrap: balance;
 }
 .hero h1 .accent {
   font-style: italic;
@@ -486,6 +487,7 @@ img { max-width: 100%; display: block; }
   max-width: 780px;
   margin-bottom: 24px;
   font-variation-settings: "opsz" 144;
+  text-wrap: balance;
 }
 .section-title em {
   font-style: italic;
@@ -3631,4 +3633,11 @@ img { max-width: 100%; display: block; }
   /* Gallery video row */
   .gallery-video-heading { font-size: 20px; }
   .gallery-yt-link       { font-size: 13px; padding: 8px 14px; }
+}
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  .date-card-label::before { animation: none; }
+  .fade-in { transition: none; opacity: 1; transform: none; }
 }

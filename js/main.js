@@ -394,11 +394,17 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     carousel.appendChild(wrap);
   }
 
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function advance() { goTo(current >= maxIdx() ? 0 : current + 1); }
-  function resetTimer() { clearInterval(timer); timer = setInterval(advance, 4000); }
+  function resetTimer() { clearInterval(timer); if (!reducedMotion) timer = setInterval(advance, 4000); }
 
   carousel.addEventListener('mouseenter', function () { clearInterval(timer); });
   carousel.addEventListener('mouseleave', resetTimer);
+
+  new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) { resetTimer(); } else { clearInterval(timer); }
+  }, { threshold: 0.1 }).observe(carousel);
 
   window.addEventListener('resize', function () { current = Math.min(current, maxIdx()); buildDots(); goTo(current); });
 
@@ -445,11 +451,17 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     trackWrap.after(wrap);
   }
 
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function advance() { goTo(current >= maxIdx() ? 0 : current + 1); }
-  function resetTimer() { clearInterval(timer); timer = setInterval(advance, 4000); }
+  function resetTimer() { clearInterval(timer); if (!reducedMotion) timer = setInterval(advance, 4000); }
 
   section.addEventListener('mouseenter', function () { clearInterval(timer); });
   section.addEventListener('mouseleave', resetTimer);
+
+  new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) { resetTimer(); } else { clearInterval(timer); }
+  }, { threshold: 0.1 }).observe(section);
 
   window.addEventListener('resize', function () { current = Math.min(current, maxIdx()); buildDots(); goTo(current); });
 

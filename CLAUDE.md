@@ -11,7 +11,7 @@ Open `index.html` directly in a browser — no server needed. There is no build 
 
 ## Architecture
 
-Everything lives in `index.html`. The file is structured in this order:
+The site has six pages (`index.html`, `speakers.html`, `events.html`, `hub.html`, `donate.html`, `blog/index.html`) sharing `css/main.css` and `js/main.js`. `index.html` is structured in this order:
 
 1. `<head>` — SEO meta, Open Graph, Twitter card, inline SVG favicon, structured data (JSON-LD), Google Fonts link, then all `<style>` CSS
 2. `<body>` — sections in page order, each marked with a comment like `<!-- ============ NAV ============ -->`:
@@ -43,7 +43,7 @@ Changing a variable propagates everywhere — don't hardcode hex values.
 
 ## Hard constraints
 
-- Everything stays in the single `index.html` — no npm, no bundler, no external JS libraries. Must deploy by drag-and-drop.
+- No npm, no bundler, no external JS libraries. Must deploy by drag-and-drop (Netlify CLI `netlify deploy --dir=.`).
 - Non-developers on the SEP team will maintain this — keep code simple and comment any section they might need to edit.
 - Must stay fast on cheap Android phones on mobile data: keep the lite-YouTube pattern, lazy-load all images, no heavy assets.
 
