@@ -1,6 +1,10 @@
 [build]
   publish = "."
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # Redirect Netlify subdomain to the canonical custom domain
 [[redirects]]
   from   = "https://sepwebsite.netlify.app/*"

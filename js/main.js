@@ -36,13 +36,41 @@ if (hubForm) {
   });
 }
 
-// Footer devos newsletter form
+// Shared Brevo subscribe helper — used by footer and banner forms
+function subscribeToBrevo(email, onSuccess, onError) {
+  fetch('/.netlify/functions/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email })
+  })
+  .then(function (res) { return res.json(); })
+  .then(function (data) { data.result === 'success' ? onSuccess() : onError(); })
+  .catch(function () { onError(); });
+}
+
+// Footer devos newsletter form (present on every page)
 const devosForm = document.getElementById('devos-form');
-const devosSuccess = document.getElementById('devos-success');
 if (devosForm) {
-  devosForm.addEventListener('submit', e => {
+  devosForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    devosForm.innerHTML = '<div style="color:var(--lime);font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;">✓ You\'re subscribed.</div>';
+    var input = devosForm.querySelector('input[type="email"]');
+    var btn = devosForm.querySelector('button[type="submit"]');
+    var email = input ? input.value.trim() : '';
+    if (!email || !email.includes('@')) return;
+    if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
+    subscribeToBrevo(email, function () {
+      devosForm.innerHTML = '<div style="color:var(--lime);font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;">Almost there. Check your email to confirm your subscription.</div>';
+    }, function () {
+      if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
+      var err = devosForm.querySelector('.sub-err');
+      if (!err) {
+        err = document.createElement('p');
+        err.className = 'sub-err';
+        err.style.cssText = 'color:var(--amber-deep);font-size:12px;margin-top:6px;margin-bottom:0;';
+        devosForm.appendChild(err);
+      }
+      err.textContent = 'Something went wrong. Please try again.';
+    });
   });
 }
 
@@ -176,8 +204,36 @@ function handleNotifyForm(formId, successId) {
 }
 handleNotifyForm('webinar-form', 'webinar-success');
 handleNotifyForm('career-form', 'career-success');
-handleNotifyForm('devos-banner-form', 'devos-banner-success');
 handleNotifyForm('hub-waitlist', 'hub-waitlist-success');
+
+// Events page Business Devotionals banner — wired to Brevo
+(function () {
+  var form = document.getElementById('devos-banner-form');
+  var successEl = document.getElementById('devos-banner-success');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = form.querySelector('input[type="email"]');
+    var btn = form.querySelector('button[type="submit"]');
+    var email = input ? input.value.trim() : '';
+    if (!email || !email.includes('@')) return;
+    if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
+    subscribeToBrevo(email, function () {
+      form.style.display = 'none';
+      if (successEl) successEl.classList.add('show');
+    }, function () {
+      if (btn) { btn.disabled = false; btn.textContent = 'Get the newsletter free →'; }
+      var err = form.querySelector('.sub-err');
+      if (!err) {
+        err = document.createElement('p');
+        err.className = 'sub-err';
+        err.style.cssText = 'color:var(--amber);font-size:12px;margin-top:6px;margin-bottom:0;';
+        form.appendChild(err);
+      }
+      err.textContent = 'Something went wrong. Please try again.';
+    });
+  });
+}());
 
 // Copy account number to clipboard (donate.html)
 document.querySelectorAll('.copy-btn').forEach(btn => {
@@ -397,7 +453,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function advance() { goTo(current >= maxIdx() ? 0 : current + 1); }
-  function resetTimer() { clearInterval(timer); if (!reducedMotion) timer = setInterval(advance, 4000); }
+  function resetTimer() { clearInterval(timer); if (!reducedMotion) timer = setInterval(advance, 2500); }
 
   carousel.addEventListener('mouseenter', function () { clearInterval(timer); });
   carousel.addEventListener('mouseleave', resetTimer);
