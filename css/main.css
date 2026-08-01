@@ -3692,6 +3692,66 @@ img { max-width: 100%; display: block; }
   .gallery-yt-link       { font-size: 13px; padding: 8px 14px; }
 }
 
+/* ============ SUBSCRIBED CONFIRMATION BANNER ============ */
+.confirmed-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120px);
+  z-index: 10000;
+  background: var(--forest);
+  color: var(--paper);
+  border: 1px solid rgba(140, 198, 63, 0.35);
+  border-radius: 100px;
+  padding: 14px 24px 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  opacity: 0;
+}
+.confirmed-banner.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.confirmed-banner.hide {
+  transform: translateX(-50%) translateY(-120px);
+  opacity: 0;
+}
+.confirmed-banner-icon {
+  width: 22px;
+  height: 22px;
+  background: var(--lime);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--forest-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
+.confirmed-banner-close {
+  background: none;
+  border: none;
+  color: rgba(250, 248, 241, 0.5);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 0 0 8px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.confirmed-banner-close:hover { color: var(--paper); }
+@media (max-width: 480px) {
+  .confirmed-banner { white-space: normal; border-radius: 16px; top: 12px; width: calc(100% - 32px); }
+}
+
 /* ============ REDUCED MOTION ============ */
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }

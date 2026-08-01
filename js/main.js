@@ -583,3 +583,34 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 
   setTimeout(buildPopup, 8000);
 }());
+
+// ============ SUBSCRIPTION CONFIRMED BANNER ============
+(function () {
+  if (!/[?&]subscribed=true/.test(window.location.search)) return;
+
+  // Clean the param from the URL without triggering a reload
+  var cleanUrl = window.location.pathname + window.location.search.replace(/[?&]subscribed=true/, '').replace(/^\?$/, '') + window.location.hash;
+  history.replaceState(null, '', cleanUrl);
+
+  var banner = document.createElement('div');
+  banner.className = 'confirmed-banner';
+  banner.setAttribute('role', 'status');
+  banner.innerHTML =
+    '<div class="confirmed-banner-icon">✓</div>' +
+    '<span>You\'re confirmed! Welcome to SEP Business Devotionals.</span>' +
+    '<button class="confirmed-banner-close" aria-label="Dismiss">&times;</button>';
+  document.body.appendChild(banner);
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { banner.classList.add('show'); });
+  });
+
+  function dismiss() {
+    banner.classList.remove('show');
+    banner.classList.add('hide');
+    setTimeout(function () { if (banner.parentNode) banner.parentNode.removeChild(banner); }, 400);
+  }
+
+  banner.querySelector('.confirmed-banner-close').addEventListener('click', dismiss);
+  setTimeout(dismiss, 7000);
+}());
