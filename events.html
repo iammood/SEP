@@ -489,7 +489,18 @@
       </div>
       <div>
         <form id="devos-banner-form">
-
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-row" style="margin-bottom: 0;">
+              <label class="form-label" style="color: rgba(250,248,241,.65);">First name</label>
+              <input type="text" name="firstName" class="form-input" required placeholder="First name"
+                style="background: rgba(250,248,241,.08); border-color: rgba(250,248,241,.18); color: var(--paper);">
+            </div>
+            <div class="form-row" style="margin-bottom: 0;">
+              <label class="form-label" style="color: rgba(250,248,241,.65);">Last name</label>
+              <input type="text" name="lastName" class="form-input" required placeholder="Last name"
+                style="background: rgba(250,248,241,.08); border-color: rgba(250,248,241,.18); color: var(--paper);">
+            </div>
+          </div>
           <div class="form-row">
             <label class="form-label" for="devos-email" style="color: rgba(250,248,241,.65);">Your email address</label>
             <input type="email" id="devos-email" name="email" class="form-input" required placeholder="you@example.com"

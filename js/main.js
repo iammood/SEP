@@ -37,14 +37,14 @@ if (hubForm) {
 }
 
 // Shared Brevo subscribe helper — used by footer and banner forms
-function subscribeToBrevo(email, onSuccess, onError) {
+function subscribeToBrevo(data, onSuccess, onError) {
   fetch('/.netlify/functions/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email })
+    body: JSON.stringify(data)
   })
   .then(function (res) { return res.json(); })
-  .then(function (data) { data.result === 'success' ? onSuccess() : onError(); })
+  .then(function (d) { d.result === 'success' ? onSuccess() : onError(); })
   .catch(function () { onError(); });
 }
 
@@ -53,12 +53,14 @@ const devosForm = document.getElementById('devos-form');
 if (devosForm) {
   devosForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var input = devosForm.querySelector('input[type="email"]');
+    var emailInput = devosForm.querySelector('input[name="email"]');
     var btn = devosForm.querySelector('button[type="submit"]');
-    var email = input ? input.value.trim() : '';
+    var email = emailInput ? emailInput.value.trim() : '';
+    var firstName = (devosForm.querySelector('input[name="firstName"]') || {}).value || '';
+    var lastName = (devosForm.querySelector('input[name="lastName"]') || {}).value || '';
     if (!email || !email.includes('@')) return;
     if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
-    subscribeToBrevo(email, function () {
+    subscribeToBrevo({ email: email, firstName: firstName.trim(), lastName: lastName.trim() }, function () {
       devosForm.innerHTML = '<div style="color:var(--lime);font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;">Almost there. Check your email to confirm your subscription.</div>';
     }, function () {
       if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
@@ -213,12 +215,14 @@ handleNotifyForm('hub-waitlist', 'hub-waitlist-success');
   if (!form) return;
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var input = form.querySelector('input[type="email"]');
+    var input = form.querySelector('input[name="email"]') || form.querySelector('input[type="email"]');
     var btn = form.querySelector('button[type="submit"]');
     var email = input ? input.value.trim() : '';
+    var firstName = (form.querySelector('input[name="firstName"]') || {}).value || '';
+    var lastName = (form.querySelector('input[name="lastName"]') || {}).value || '';
     if (!email || !email.includes('@')) return;
     if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
-    subscribeToBrevo(email, function () {
+    subscribeToBrevo({ email: email, firstName: firstName.trim(), lastName: lastName.trim() }, function () {
       form.style.display = 'none';
       if (successEl) successEl.classList.add('show');
     }, function () {

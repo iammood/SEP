@@ -193,8 +193,14 @@
         <div class="footer-newsletter-sub">Short, practical wisdom on faith and business delivered to your inbox every month. One story. One scripture. One thing to apply this week.</div>
       </div>
       <form class="footer-newsletter-form" id="devos-form">
-        <input type="email" class="footer-newsletter-input" placeholder="your@email.com" required>
-        <button type="submit" class="footer-newsletter-btn">Subscribe</button>
+        <div class="footer-newsletter-name-row">
+          <input type="text" name="firstName" class="footer-newsletter-input" placeholder="First name" required>
+          <input type="text" name="lastName" class="footer-newsletter-input" placeholder="Last name" required>
+        </div>
+        <div class="footer-newsletter-email-row">
+          <input type="email" name="email" class="footer-newsletter-input" placeholder="your@email.com" required>
+          <button type="submit" class="footer-newsletter-btn">Subscribe</button>
+        </div>
       </form>
     </div>
     <div class="footer-grid">

@@ -1955,6 +1955,12 @@ img { max-width: 100%; display: block; }
 }
 .footer-newsletter-form {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.footer-newsletter-name-row,
+.footer-newsletter-email-row {
+  display: flex;
   gap: 8px;
 }
 .footer-newsletter-input {
@@ -1967,6 +1973,7 @@ img { max-width: 100%; display: block; }
   font-family: inherit;
   font-size: 14px;
   transition: border-color 0.2s;
+  min-width: 0;
 }
 .footer-newsletter-input:focus {
   outline: none;
@@ -1988,7 +1995,7 @@ img { max-width: 100%; display: block; }
 }
 .footer-newsletter-btn:hover { background: var(--forest); color: var(--paper); transform: translateY(-1px); }
 @media (max-width: 500px) {
-  .footer-newsletter-form { flex-direction: column; }
+  .footer-newsletter-name-row { flex-direction: column; }
   .footer-newsletter-btn { width: 100%; }
 }
 

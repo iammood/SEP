@@ -25,10 +25,12 @@ exports.handler = async function (event) {
   }
 
   // Parse body
-  let email;
+  let email, firstName, lastName;
   try {
     const body = JSON.parse(event.body || '{}');
     email = (body.email || '').trim().toLowerCase();
+    firstName = (body.firstName || '').trim();
+    lastName = (body.lastName || '').trim();
   } catch (_) {
     return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ result: 'error', message: 'Invalid request body' }) };
   }
@@ -54,6 +56,12 @@ exports.handler = async function (event) {
     'accept': 'application/json'
   };
 
+  // Build optional attributes object
+  const attributes = {};
+  if (firstName) attributes.FIRSTNAME = firstName;
+  if (lastName) attributes.LASTNAME = lastName;
+  const hasAttrs = Object.keys(attributes).length > 0;
+
   try {
     let response;
 
@@ -64,6 +72,7 @@ exports.handler = async function (event) {
         headers: brevoHeaders,
         body: JSON.stringify({
           email,
+          ...(hasAttrs && { attributes }),
           includeListIds: [listId],
           templateId: doiTemplateId,
           redirectionUrl: 'https://seedempowermentprogram.com/?subscribed=true'
@@ -77,6 +86,7 @@ exports.handler = async function (event) {
         headers: brevoHeaders,
         body: JSON.stringify({
           email,
+          ...(hasAttrs && { attributes }),
           listIds: [listId],
           updateEnabled: true
         })
