@@ -143,13 +143,23 @@ if (regForm) {
     })
     .then(function (res) { return res.json(); })
     .then(function (data) {
+      var content = document.querySelector('.reg-form-content');
       if (data.result === 'success') {
-        var content = document.querySelector('.reg-form-content');
         if (content) content.style.display = 'none';
         if (regSuccess) {
           regSuccess.classList.add('show');
           regSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+      } else if (data.result === 'already_registered') {
+        if (content) content.style.display = 'none';
+        var alreadyMsg = document.createElement('div');
+        alreadyMsg.className = 'success-msg show';
+        alreadyMsg.innerHTML =
+          '<div class="success-icon">✓</div>' +
+          '<h4>You are already registered for SEP 2026.</h4>' +
+          '<p>We have your seat saved and will see you in October. If you need to make a change, email <a href="mailto:hello@seedempowermentprogram.com">hello@seedempowermentprogram.com</a>.</p>';
+        if (content) content.parentNode.appendChild(alreadyMsg);
+        alreadyMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         throw new Error('result not success');
       }
