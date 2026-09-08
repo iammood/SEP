@@ -579,11 +579,18 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 
     var nav = document.querySelector('.nav');
 
+    // Measure the bar at its full height before it is collapsed for the
+    // opening animation. Reading offsetHeight mid transition would return the
+    // in-between value and leave the nav parked at a couple of pixels.
+    el.style.maxHeight = 'none';
+    var barHeight = el.offsetHeight;
+    el.style.maxHeight = '';
+
     // Keep the fixed nav sitting directly under the bar. As the visitor
     // scrolls the bar away, the nav rides up with it and settles at the top.
     function syncNav() {
       if (!nav) return;
-      var visible = Math.max(0, el.offsetHeight - window.pageYOffset);
+      var visible = Math.max(0, barHeight - window.pageYOffset);
       nav.style.top = visible + 'px';
     }
 
