@@ -48,26 +48,132 @@
   "eventStatus": "https://schema.org/EventScheduled",
   "location": {
     "@type": "Place",
-    "name": "Lagos, Nigeria",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Lagos",
-      "addressCountry": "NG"
-    }
-  },
-  "description": "Three days of hands-on skills training, business teaching, and community for creatives, entrepreneurs, and professionals. Free to attend.",
+"name": "One Church Auditorium",
+"address": {
+  "@type": "PostalAddress",
+  "streetAddress": "KM 23 Lekki-Epe Expressway",
+  "addressLocality": "Sangotedo",
+  "addressRegion": "Lagos",
+  "postalCode": "106104",
+  "addressCountry": "NG"
+}  },
+    "description": "Three days of hands-on skills training, business teaching, and community for creatives, entrepreneurs, and professionals. Free to attend.",
+    "image": "https://www.seedempowermentprogram.com/og-image.jpg",
   "organizer": {
     "@type": "Organization",
     "name": "OneChurch International · Kingdom Impact Team",
-    "url": "https://www.seedempowermentprogram.com"
+    "url": "https://www.seedempowermentprogram.com",
+"logo": "https://www.seedempowermentprogram.com/assets/sep-logo.webp",
+"sameAs": ["https://www.instagram.com/sep_hub/"]
   },
   "offers": {
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "NGN",
     "availability": "https://schema.org/InStock",
-    "url": "https://www.seedempowermentprogram.com/#register"
+    "url": "https://www.seedempowermentprogram.com/#register",
+    "validFrom": "2026-08-01"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Seed Empowerment Program",
+  "image": "https://www.seedempowermentprogram.com/assets/sep-logo.webp",
+  "description": "Skills training and entrepreneurship program by OneChurch International - Kingdom Impact Team",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "KM 23 Lekki-Epe Expressway",
+    "addressLocality": "Sangotedo",
+    "addressRegion": "Lagos",
+    "postalCode": "106104",
+    "addressCountry": "NG"
+  },
+  "email": "hello@seedempowermentprogram.com",
+  "url": "https://www.seedempowermentprogram.com",
+  "sameAs": [
+    "https://www.instagram.com/sep_hub/",
+    "https://www.onechurchng.org/"
+  ],
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "6.5007",
+    "longitude": "3.5880"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is SEP just this October event, or is there more?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "More. The October event is our flagship, but SEP runs all year: monthly webinars on business, career, and finance, the SEP Career Fair in April, monthly business devotionals, and soon the SEP Hub Directory."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to be a OneChurch member to attend?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. SEP is open to everyone. Most attendees come through the church family, but you're just as welcome if you heard about us from a friend, a workmate, or Instagram."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does it cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nothing. SEP is free to attend. It's funded by sponsors and the OneChurch community. You do need to register in advance to reserve a seat, since we cap each skill track by capacity."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I pick more than one skill track?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One primary track. The deep work happens when you commit to one skill across all three days. You'll still get to see the main business teaching sessions with everyone else."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where exactly is it happening in Lagos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One Church Auditorium, KM 23 Lekki-Epe Expressway, Sangotedo, Lagos. Full directions will be sent by email to everyone who registers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will there be food?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, light breakfast is provided each day."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the SEP Hub Directory?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A private directory of business owners, professionals, and skilled workers inside the OneChurch community and SEP community. It's how we keep the connections made at SEP going all year, referrals, mentorship, partnerships. You'll be invited to join at the event."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "I registered last year but couldn't make it. Do I need to register again?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, please. Registration resets each year. This helps us plan capacity and materials for each skill track."
+      }
+    }
+  ]
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,7 +229,6 @@
     <div>
       <div class="eyebrow">SEP 2026 · Equip yourself for impact</div>
       <h1>Skills you can<br>earn from. Faith<br>you can <span class="accent">build on</span>.</h1>
-      <p class="lead">Three days of hands-on skill training, real business teaching, and a community that stays with you long after October. Free to attend. Open to everyone 16 and up.</p>
       <div class="hero-ctas">
         <a href="#register" class="btn btn-primary">
           Reserve your spot
@@ -131,6 +236,10 @@
         </a>
         <a href="#skills" class="btn btn-ghost">Explore the skill tracks</a>
       </div>
+      <!-- Hero summary. Sits below the buttons so the headline and CTA stay on the first -->
+      <!-- screen. Written in plain prose so search engines and AI assistants can quote the -->
+      <!-- what, when, where, and cost. Update it if any of those details change. -->
+      <p class="lead" style="margin-top: 32px;">Seed Empowerment Program (SEP) 2026 is a free three-day skills training event in Lagos, Nigeria. It runs October 8-10, 2026 at One Church Auditorium, KM 23 Lekki-Epe Expressway, Sangotedo, Lagos. Ten hands-on skill tracks are offered, alongside real business teaching and a community that stays with you long after October. Free to attend, open to everyone 16 and older.</p>
       <div class="hero-trust">
         <div class="hero-trust-dots">
           <div class="trust-dot">TB</div>
@@ -174,9 +283,9 @@
       <div>
         <div class="section-label">What is SEP</div>
         <h2 class="section-title">Three days in October. A year-round <em>programme</em>.</h2>
-        <p class="section-sub">The Seed Empowerment Program is the flagship initiative of OneChurch International's Kingdom Impact Team. It's a hands-on training event - three days of skill tracks, business sessions, and community for creatives, entrepreneurs, and young professionals who are serious about building.</p>
-        <p style="font-size: 15px; color: var(--muted); line-height: 1.7; margin-top: 16px;">SEP runs on two tracks. The business of the skill - main-stage sessions where established entrepreneurs share how they built and run real businesses. And the skill of the business - ten hands-on tracks where you learn a practical, income-generating skill from someone who earns from it.</p>
-        <p style="font-size: 15px; color: var(--muted); line-height: 1.7; margin-top: 16px;">SEP doesn't stop in October. Monthly webinars, a career fair, a business devotional newsletter, and the SEP Hub Directory make it a year-round resource. <a href="events.html" style="color: var(--forest); text-decoration: underline; text-underline-offset: 3px;">See everything we do →</a></p>
+        <!-- Plain-facts summary. Written in prose so search engines and AI assistants can -->
+        <!-- quote the scope, audience, skills, and cost. Update it if any of those change. -->
+        <p style="font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 20px;">SEP is a free annual skills and entrepreneurship training event organized by OneChurch International's Kingdom Impact Team. The 2026 event targets 1,500+ young Nigerian entrepreneurs and creators. It operates as two tracks: main-stage business talks and ten hands-on skill training tracks. Skills taught include social media ads, photography, public speaking, makeup artistry, hairstyling, graphics design, video editing, candle making, shoe-making, and content creation. All facilitators are working professionals who earn from their skill. There is no attendance fee. SEP also runs monthly webinars, a career fair, a business devotionals newsletter, and the SEP Hub Directory as part of a year-round ecosystem. <a href="events.html" style="color: var(--forest); text-decoration: underline; text-underline-offset: 3px;">See everything we do →</a></p>
         <a href="#register" class="btn btn-primary" style="margin-top: 32px;">Reserve your free spot <span class="arrow">→</span></a>
       </div>
       <div class="about-sep-stats">
@@ -503,6 +612,86 @@
   </div>
 </section>
 
+<!-- ============ FAQ ============ -->
+<!-- To add or edit a question: copy one whole faq-item block below and change the -->
+<!-- text inside faq-question and faq-answer. If you change a question here, update -->
+<!-- the matching entry in the FAQPage structured data block at the top of this file. -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-label">Common questions</div>
+    <h2 class="section-title">FAQ</h2>
+    <p class="section-sub">Everything people usually ask us</p>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          Is SEP just this October event, or is there more?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">More. The October event is our flagship, but SEP runs all year: monthly webinars on business, career, and finance, the SEP Career Fair in April, monthly business devotionals, and soon the SEP Hub Directory.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          Do I need to be a OneChurch member to attend?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">No. SEP is open to everyone. Most attendees come through the church family, but you're just as welcome if you heard about us from a friend, a workmate, or Instagram.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          How much does it cost?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Nothing. SEP is free to attend. It's funded by sponsors and the OneChurch community. You do need to register in advance to reserve a seat, since we cap each skill track by capacity.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          Can I pick more than one skill track?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">One primary track. The deep work happens when you commit to one skill across all three days. You'll still get to see the main business teaching sessions with everyone else.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          Where exactly is it happening in Lagos?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">One Church Auditorium, KM 23 Lekki-Epe Expressway, Sangotedo, Lagos. Full directions will be sent by email to everyone who registers.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          Will there be food?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Yes, light breakfast is provided each day.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          What's the SEP Hub Directory?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">A private directory of business owners, professionals, and skilled workers inside the OneChurch community and SEP community. It's how we keep the connections made at SEP going all year, referrals, mentorship, partnerships. You'll be invited to join at the event.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          I registered last year but couldn't make it. Do I need to register again?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Yes, please. Registration resets each year. This helps us plan capacity and materials for each skill track.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ============ REGISTER ============ -->
 <section class="register" id="register">
   <div class="container register-inner">
@@ -513,7 +702,6 @@
       <ul class="register-perks">
         <li>Full 3-day access - sessions, panels, and workshops</li>
         <li>Your choice of one hands-on skill track</li>
-        <li>Meals and materials included</li>
         <li>Invitation to the SEP Hub Directory</li>
         <li>Post-event resources and recordings</li>
       </ul>

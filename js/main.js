@@ -20,7 +20,10 @@ if (navToggle && navLinks) {
 // FAQ toggle
 document.querySelectorAll('.faq-question').forEach(q => {
   q.addEventListener('click', () => {
-    q.parentElement.classList.toggle('open');
+    // toggle() returns true if it just opened, false if it just closed.
+    // Screen readers read aria-expanded aloud, so it has to match the real state.
+    const open = q.parentElement.classList.toggle('open');
+    q.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 });
 
