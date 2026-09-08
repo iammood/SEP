@@ -64,6 +64,8 @@ if (devosForm) {
     if (!email || !email.includes('@')) return;
     if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
     subscribeToBrevo({ email: email, firstName: firstName.trim(), lastName: lastName.trim() }, function () {
+      // A subscriber never needs the devotional banner again
+      try { localStorage.setItem('sep_devotionals_dismissed', '1'); } catch (e) {}
       devosForm.innerHTML = '<div style="color:var(--lime);font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;">Almost there. Check your email to confirm your subscription.</div>';
     }, function () {
       if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
@@ -236,6 +238,8 @@ handleNotifyForm('hub-waitlist', 'hub-waitlist-success');
     if (!email || !email.includes('@')) return;
     if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
     subscribeToBrevo({ email: email, firstName: firstName.trim(), lastName: lastName.trim() }, function () {
+      // A subscriber never needs the devotional banner again
+      try { localStorage.setItem('sep_devotionals_dismissed', '1'); } catch (e) {}
       form.style.display = 'none';
       if (successEl) successEl.classList.add('show');
     }, function () {
@@ -543,62 +547,200 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   resetTimer();
 }());
 
-// ============ BUSINESS DEVOTIONAL POPUP ============
-// In-memory flag — resets on page load (intentional, privacy-friendly)
+// ============ TOP BANNERS (devotional + register nudge) ============
+// Two prompts: the business devotional slides down from the top of the page
+// at 8 seconds, and a centred modal nudging the visitor toward the
+// registration form opens at 15 seconds. They sit on different layers, so
+// both can be on screen at once. Dismissing either one is remembered in
+// localStorage, so it stays gone on that visitor's next page load.
 (function () {
-  let dismissed = false;
+  var DEVOS_KEY = 'sep_devotionals_dismissed';
+  // The register modal is shown every visit, so it has no localStorage key.
+  // It stops for good once the event is under way. Month is zero based, so
+  // 9 is October. Compared against the visitor's own local clock.
+  var REG_CUTOFF = new Date(2026, 9, 10, 0, 0, 0);
 
-  function buildPopup() {
-    const list = (typeof SEP_DEVOTIONALS !== 'undefined' && SEP_DEVOTIONALS.length)
-      ? SEP_DEVOTIONALS : null;
-    if (!list || dismissed) return;
+  // localStorage throws in Safari private mode and when storage is full, so
+  // every read and write is wrapped. If it is unavailable the banners still
+  // work, they just show again on the next visit.
+  function seen(key) {
+    try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
+  }
+  function remember(key) {
+    try { localStorage.setItem(key, '1'); } catch (e) {}
+  }
 
-    const devo = list[Math.floor(Math.random() * list.length)];
+  // Adds the top banner as the very first element in the body, above the nav,
+  // so it pushes the whole page down rather than covering anything. The nav is
+  // fixed, so its top offset is kept in step with the bar by hand.
+  // Returns the dismiss function so a CTA can close the bar too.
+  function mount(el, key) {
+    document.body.insertBefore(el, document.body.firstChild);
 
-    const popup = document.createElement('div');
-    popup.id = 'devos-popup';
-    popup.className = 'devos-popup';
-    popup.setAttribute('role', 'complementary');
-    popup.setAttribute('aria-label', 'Business Devotional');
+    var nav = document.querySelector('.nav');
 
-    popup.innerHTML =
-      '<div class="devos-popup-header">' +
-        '<span class="devos-popup-label">Business Devotional</span>' +
-        '<button class="devos-popup-close" aria-label="Close devotional">&times;</button>' +
-      '</div>' +
-      '<p class="devos-popup-text">' + devo.text + '</p>' +
-      '<div class="devos-popup-verse">' + devo.verse + '</div>' +
-      '<a href="#devos-form" class="devos-popup-cta">Get monthly devotionals →</a>';
-
-    document.body.appendChild(popup);
-
-    // Animate in (double rAF ensures the initial state is painted first)
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { popup.classList.add('show'); });
-    });
-
-    function dismiss() {
-      dismissed = true;
-      popup.classList.remove('show');
-      popup.classList.add('hide');
-      setTimeout(function () { if (popup.parentNode) popup.parentNode.removeChild(popup); }, 350);
+    // Keep the fixed nav sitting directly under the bar. As the visitor
+    // scrolls the bar away, the nav rides up with it and settles at the top.
+    function syncNav() {
+      if (!nav) return;
+      var visible = Math.max(0, el.offsetHeight - window.pageYOffset);
+      nav.style.top = visible + 'px';
     }
 
-    popup.querySelector('.devos-popup-close').addEventListener('click', dismiss);
+    // Reading offsetHeight forces a synchronous layout, which commits the
+    // collapsed starting state. Adding the class straight after then animates
+    // reliably. A rAF callback is not guaranteed to run here, for example in a
+    // background tab, and if it does not the bar never gets its show class.
+    void el.offsetHeight;
+    el.classList.add('show');
+    if (nav) nav.style.transition = 'top 0.42s ease';
+    syncNav();
 
-    // CTA: smooth-scroll to footer signup then close
-    popup.querySelector('.devos-popup-cta').addEventListener('click', function (e) {
+    window.addEventListener('scroll', syncNav, { passive: true });
+    window.addEventListener('resize', syncNav);
+
+    function dismiss() {
+      remember(key);
+      el.classList.remove('show');
+      el.classList.add('hide');
+      window.removeEventListener('scroll', syncNav);
+      window.removeEventListener('resize', syncNav);
+      if (nav) nav.style.top = '0px';
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        // Hand positioning back to the stylesheet
+        if (nav) { nav.style.top = ''; nav.style.transition = ''; }
+      }, 350);
+    }
+
+    el.querySelector('.sep-banner-close').addEventListener('click', dismiss);
+    return dismiss;
+  }
+
+  function scrollToEl(el) {
+    var top = el.getBoundingClientRect().top + window.pageYOffset - 80;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+
+  // ---- Devotional banner, 8 seconds ----
+  function buildDevotional() {
+    var list = (typeof SEP_DEVOTIONALS !== 'undefined' && SEP_DEVOTIONALS.length)
+      ? SEP_DEVOTIONALS : null;
+    if (!list || seen(DEVOS_KEY)) return;
+
+    var devo = list[Math.floor(Math.random() * list.length)];
+
+    var el = document.createElement('div');
+    el.id = 'devos-banner';
+    el.className = 'sep-banner sep-banner-devos';
+    el.setAttribute('role', 'complementary');
+    el.setAttribute('aria-label', 'Business Devotional');
+    // Two identical copies so the 50% slide in @keyframes marquee loops seamlessly
+    var message =
+      '<span>' +
+        '<span class="sep-banner-text">' + devo.text + '</span>' +
+        '<span class="sep-banner-verse">' + devo.verse + '</span>' +
+      '</span>';
+
+    el.innerHTML =
+      '<div class="sep-banner-inner">' +
+        '<span class="sep-banner-label">Business Devotional</span>' +
+        '<div class="sep-banner-marquee">' +
+          '<div class="sep-banner-track">' + message + message + '</div>' +
+        '</div>' +
+        '<a href="#devos-form" class="sep-banner-cta">Get monthly devotionals &rarr;</a>' +
+        '<button class="sep-banner-close" aria-label="Close devotional">&times;</button>' +
+      '</div>';
+
+    var dismiss = mount(el, DEVOS_KEY);
+
+    // CTA: close the bar, then scroll to the footer signup form
+    el.querySelector('.sep-banner-cta').addEventListener('click', function (e) {
       e.preventDefault();
       dismiss();
       var target = document.getElementById('devos-form');
-      if (target) {
-        var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({ top: top, behavior: 'smooth' });
-      }
+      if (target) scrollToEl(target);
     });
   }
 
-  setTimeout(buildPopup, 8000);
+  // ---- Register banner, 15 seconds, landing page only ----
+  // Skipped entirely if the visitor already reached or touched the register
+  // section, since nudging someone toward what they are already looking at
+  // is just noise.
+  var regSection = document.getElementById('register');
+  var regTouched = false;
+
+  if (regSection) {
+    if ('IntersectionObserver' in window) {
+      var regObserver = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          regTouched = true;
+          regObserver.disconnect();
+        }
+      }, { threshold: 0.15 });
+      regObserver.observe(regSection);
+    }
+    // Focusing or typing in the form counts as interaction too
+    regSection.addEventListener('focusin', function () { regTouched = true; });
+    regSection.addEventListener('input', function () { regTouched = true; });
+  }
+
+  function buildRegister() {
+    if (!regSection || regTouched) return;
+    if (new Date() >= REG_CUTOFF) return;
+
+    // Overlay covers the page, the card sits centred inside it
+    var overlay = document.createElement('div');
+    overlay.id = 'register-modal';
+    overlay.className = 'reg-modal';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Register for SEP 2026');
+    overlay.innerHTML =
+      '<div class="reg-modal-card">' +
+        '<button class="reg-modal-close" aria-label="Close registration reminder">&times;</button>' +
+        '<span class="reg-modal-label">Seats are limited</span>' +
+        '<p class="reg-modal-text">SEP 2026 is free to attend. Reserve your seat before your track fills up.</p>' +
+        '<a href="#register" class="reg-modal-cta">Reserve your spot &rarr;</a>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    // Same forced reflow as the banner, so the card animates in reliably
+    void overlay.offsetHeight;
+    overlay.classList.add('show');
+
+    function dismiss() {
+      overlay.classList.remove('show');
+      overlay.classList.add('hide');
+      document.removeEventListener('keydown', onKey);
+      setTimeout(function () {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }, 300);
+    }
+
+    function onKey(e) {
+      if (e.key === 'Escape' || e.keyCode === 27) dismiss();
+    }
+
+    overlay.querySelector('.reg-modal-close').addEventListener('click', dismiss);
+
+    // Clicking the dimmed area closes it, clicking the card itself does not
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) dismiss();
+    });
+
+    document.addEventListener('keydown', onKey);
+
+    overlay.querySelector('.reg-modal-cta').addEventListener('click', function (e) {
+      e.preventDefault();
+      dismiss();
+      scrollToEl(regSection);
+    });
+  }
+
+  setTimeout(buildDevotional, 8000);
+  setTimeout(buildRegister, 15000);
 }());
 
 // ============ SUBSCRIPTION CONFIRMED BANNER ============

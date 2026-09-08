@@ -3197,107 +3197,220 @@ img { max-width: 100%; display: block; }
   border-color: var(--lime);
 }
 
-/* ============ BUSINESS DEVOTIONAL POPUP ============ */
-.devos-popup {
-  position: fixed;
-  bottom: 28px;
-  right: 28px;
-  width: 320px;
-  max-width: calc(100vw - 32px);
-  background: var(--paper);
-  border: 1.5px solid var(--amber);
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-  padding: 22px 22px 18px;
-  z-index: 9000;
-  transform: translateY(24px);
+/* ============ TOP BANNERS (devotional) ============ */
+/* Sits in normal document flow as the first element in the body, above the  */
+/* nav, so it pushes the whole page down instead of covering anything. The   */
+/* fixed nav is offset in js/main.js while the bar is open.                  */
+/* Opening animates max-height so the content below slides down with it.     */
+.sep-banner {
+  position: relative;
+  z-index: 9500;
+  background: var(--forest-deep);
+  color: var(--paper);
+  border-bottom: 1.5px solid var(--amber);
+  max-height: 0;
+  overflow: hidden;
   opacity: 0;
-  transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.32s ease;
-  pointer-events: none;
+  transition: max-height 0.42s ease, opacity 0.3s ease;
 }
-.devos-popup.show {
-  transform: translateY(0);
+.sep-banner.show {
+  max-height: 160px;
   opacity: 1;
-  pointer-events: auto;
 }
-.devos-popup.hide {
-  transform: translateY(20px);
+.sep-banner.hide {
+  max-height: 0;
   opacity: 0;
-  pointer-events: none;
-  transition: transform 0.28s ease-in, opacity 0.25s ease-in;
+  transition: max-height 0.3s ease, opacity 0.22s ease;
 }
-.devos-popup-header {
+
+.sep-banner-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 13px 32px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
+  gap: 18px;
 }
-.devos-popup-label {
+.sep-banner-label {
   font-family: var(--font-mono);
   font-size: 9.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--forest);
+  color: var(--lime);
+  flex-shrink: 0;
 }
-.devos-popup-close {
+
+/* Scrolling message. Same technique as .marquee-track above: the track holds */
+/* two identical copies and slides left by 50%, so the loop is seamless and   */
+/* the full devotional is always readable, never clipped.                    */
+.sep-banner-marquee {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  /* Fade the text at both edges so it does not pop in and out abruptly */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+.sep-banner-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
+}
+.sep-banner-track > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-right: 56px;
+}
+.sep-banner-text {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--paper);
+}
+.sep-banner-verse {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--lime);
+}
+.sep-banner-cta {
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 100px;
+  background: var(--lime);
+  color: var(--forest-deep);
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.sep-banner-cta:hover {
+  background: var(--paper);
+  color: var(--forest-deep);
+}
+.sep-banner-close {
+  flex-shrink: 0;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 22px;
   line-height: 1;
-  color: var(--muted);
-  padding: 2px 4px;
-  border-radius: 6px;
-  transition: color 0.2s, background 0.2s;
+  padding: 0 0 0 4px;
+  color: rgba(250, 248, 241, 0.55);
+  transition: color 0.2s;
 }
-.devos-popup-close:hover {
-  color: var(--forest-deep);
-  background: var(--paper-warm);
-}
-.devos-popup-text {
-  font-size: 14px;
-  color: var(--forest-deep);
-  line-height: 1.65;
-  font-style: italic;
-  margin-bottom: 10px;
-}
-.devos-popup-verse {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--amber-deep);
-  margin-bottom: 18px;
-}
-.devos-popup-cta {
-  display: block;
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--forest-deep);
-  color: var(--paper);
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  transition: background 0.2s, color 0.2s;
-  box-sizing: border-box;
-}
-.devos-popup-cta:hover { background: var(--lime); color: var(--forest-deep); }
+.sep-banner-close:hover { color: var(--paper); }
 
-/* Floating card on mobile — side margins, fully rounded */
-@media (max-width: 600px) {
-  .devos-popup {
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-    width: auto;
-    max-width: none;
-    border-radius: 18px;
-    border: 1.5px solid var(--amber);
-    transform: translateY(calc(100% + 24px));
-  }
-  .devos-popup.show { transform: translateY(0); }
-  .devos-popup.hide { transform: translateY(calc(100% + 24px)); }
+@media (max-width: 760px) {
+  .sep-banner-inner { padding: 11px 16px; gap: 12px; }
+  .sep-banner-label { display: none; }
+  .sep-banner-text { font-size: 13px; }
+  .sep-banner-cta { font-size: 12px; padding: 8px 14px; }
+}
+
+/* Hold the message still for anyone who asked for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sep-banner { transition: none; }
+  .sep-banner-track { animation: none; }
+  .sep-banner-marquee { overflow-x: auto; }
+}
+
+/* ============ REGISTER MODAL ============ */
+/* Centred nudge toward the registration form, shown once at 15 seconds.  */
+/* Follows the same overlay pattern as the gallery lightbox above: fixed  */
+/* inset 0, flex centring, and the shared fadeIn keyframe. The dim is     */
+/* lighter than the lightbox so the page stays readable behind it.        */
+.reg-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9800;
+  background: rgba(8, 21, 15, 0.62);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
+}
+.reg-modal.hide { animation: none; opacity: 0; transition: opacity 0.22s ease; }
+
+.reg-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: var(--paper);
+  border: 1.5px solid var(--amber);
+  border-radius: 18px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+  padding: 32px 32px 28px;
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease;
+}
+.reg-modal.show .reg-modal-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+.reg-modal-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber-deep);
+  display: block;
+  margin-bottom: 12px;
+}
+.reg-modal-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--forest-deep);
+  margin-bottom: 22px;
+}
+.reg-modal-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px 24px;
+  border-radius: 100px;
+  background: var(--forest);
+  color: var(--paper);
+  transition: background 0.2s, color 0.2s;
+}
+.reg-modal-cta:hover {
+  background: var(--lime);
+  color: var(--forest-deep);
+}
+.reg-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  padding: 0;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.reg-modal-close:hover { color: var(--forest-deep); }
+
+@media (max-width: 480px) {
+  .reg-modal { padding: 16px; }
+  .reg-modal-card { padding: 26px 22px 24px; }
+  .reg-modal-text { font-size: 15px; }
+}
+
+/* Respect a reduced-motion preference, matching the block at the end of this file */
+@media (prefers-reduced-motion: reduce) {
+  .reg-modal { animation: none; }
+  .reg-modal-card { transition: none; transform: none; opacity: 1; }
 }
 
 /* Hub audience grid (2-col variant of hub-how-grid) */
