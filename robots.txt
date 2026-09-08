@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /sitemap.xml
+Disallow: /admin
+Disallow: /private
+
+Sitemap: https://www.seedempowermentprogram.com/sitemap.xml
