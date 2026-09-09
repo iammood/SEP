@@ -3304,10 +3304,21 @@ img { max-width: 100%; display: block; }
 .sep-banner-close:hover { color: var(--paper); }
 
 @media (max-width: 760px) {
-  .sep-banner-inner { padding: 11px 16px; gap: 12px; }
+  .sep-banner-inner { padding: 10px 14px; gap: 10px; }
   .sep-banner-label { display: none; }
-  .sep-banner-text { font-size: 13px; }
-  .sep-banner-cta { font-size: 12px; padding: 8px 14px; }
+  .sep-banner-text { font-size: 12px; }
+  .sep-banner-verse { font-size: 10px; }
+  /* Smaller CTA gives the scrolling message more of the bar */
+  .sep-banner-cta { font-size: 11px; padding: 7px 12px; }
+}
+
+/* Phones: tighter again, the message window is the scarce space here */
+@media (max-width: 480px) {
+  .sep-banner-inner { padding: 9px 12px; gap: 8px; }
+  .sep-banner-text { font-size: 11.5px; }
+  .sep-banner-verse { font-size: 9.5px; }
+  .sep-banner-cta { font-size: 10.5px; padding: 6px 11px; }
+  .sep-banner-close { font-size: 20px; }
 }
 
 /* Hold the message still for anyone who asked for reduced motion */
