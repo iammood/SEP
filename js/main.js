@@ -608,6 +608,14 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 
     window.addEventListener('resize', syncNav);
 
+    // Safety net: re-measure once the opening transition finishes. If the first
+    // measurement was off for any reason, for example a late web font changing
+    // the bar height, this corrects the offset so the bar can never end up
+    // sitting on top of the nav.
+    el.addEventListener('transitionend', function (e) {
+      if (e.propertyName === 'max-height') { barHeight = el.offsetHeight; syncNav(); }
+    });
+
     function dismiss() {
       remember(key);
       el.classList.remove('show');
