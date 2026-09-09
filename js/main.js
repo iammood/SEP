@@ -706,7 +706,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     overlay.innerHTML =
       '<div class="reg-modal-card">' +
         '<button class="reg-modal-close" aria-label="Close registration reminder">&times;</button>' +
-        '<span class="reg-modal-label">Seats are limited</span>' +
+        '<span class="reg-modal-label">Registration is FREE</span>' +
         '<p class="reg-modal-text">SEP 2026 is free to attend. Reserve your seat before your track fills up.</p>' +
         '<a href="#register" class="reg-modal-cta">Reserve your spot &rarr;</a>' +
       '</div>';
@@ -747,7 +747,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   }
 
   setTimeout(buildDevotional, 8000);
-  setTimeout(buildRegister, 15000);
+  setTimeout(buildRegister, 3000);
 }());
 
 // ============ SUBSCRIPTION CONFIRMED BANNER ============
