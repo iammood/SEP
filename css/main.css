@@ -3198,12 +3198,17 @@ img { max-width: 100%; display: block; }
 }
 
 /* ============ TOP BANNERS (devotional) ============ */
-/* Sits in normal document flow as the first element in the body, above the  */
-/* nav, so it pushes the whole page down instead of covering anything. The   */
-/* fixed nav is offset in js/main.js while the bar is open.                  */
-/* Opening animates max-height so the content below slides down with it.     */
+/* Pinned to the top of the viewport, above the nav, and stays there while   */
+/* the visitor scrolls. Nothing is covered: js/main.js pads the body by the  */
+/* bar height and offsets the fixed nav to match, so the page is pushed      */
+/* down. Position sticky cannot be used here because html and body carry     */
+/* overflow-x hidden, which stops sticky from pinning to the viewport.       */
+/* Opening animates max-height, and the body padding animates alongside it.  */
 .sep-banner {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 9500;
   background: var(--forest-deep);
   color: var(--paper);

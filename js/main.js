@@ -586,12 +586,15 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     var barHeight = el.offsetHeight;
     el.style.maxHeight = '';
 
-    // Keep the fixed nav sitting directly under the bar. As the visitor
-    // scrolls the bar away, the nav rides up with it and settles at the top.
+    // The bar is fixed, so it stays put while the visitor scrolls. To keep it
+    // from covering anything, the body is padded by the bar height and the
+    // fixed nav is offset to match. Both are re-applied on resize in case the
+    // bar rewraps to a different height.
     function syncNav() {
-      if (!nav) return;
-      var visible = Math.max(0, barHeight - window.pageYOffset);
-      nav.style.top = visible + 'px';
+      var h = el.offsetHeight > 1 ? el.offsetHeight : barHeight;
+      document.body.style.transition = 'padding-top 0.42s ease';
+      document.body.style.paddingTop = h + 'px';
+      if (nav) nav.style.top = h + 'px';
     }
 
     // Reading offsetHeight forces a synchronous layout, which commits the
@@ -603,19 +606,20 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     if (nav) nav.style.transition = 'top 0.42s ease';
     syncNav();
 
-    window.addEventListener('scroll', syncNav, { passive: true });
     window.addEventListener('resize', syncNav);
 
     function dismiss() {
       remember(key);
       el.classList.remove('show');
       el.classList.add('hide');
-      window.removeEventListener('scroll', syncNav);
       window.removeEventListener('resize', syncNav);
+      document.body.style.paddingTop = '0px';
       if (nav) nav.style.top = '0px';
       setTimeout(function () {
         if (el.parentNode) el.parentNode.removeChild(el);
         // Hand positioning back to the stylesheet
+        document.body.style.paddingTop = '';
+        document.body.style.transition = '';
         if (nav) { nav.style.top = ''; nav.style.transition = ''; }
       }, 350);
     }
