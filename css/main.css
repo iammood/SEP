@@ -3286,6 +3286,9 @@ img { max-width: 100%; display: block; }
   white-space: nowrap;
   transition: background 0.2s, color 0.2s;
 }
+/* Desktop shows the descriptive label, phones show the short one */
+.sep-banner-cta-short { display: none; }
+
 .sep-banner-cta:hover {
   background: var(--paper);
   color: var(--forest-deep);
@@ -3310,6 +3313,8 @@ img { max-width: 100%; display: block; }
   .sep-banner-verse { font-size: 10px; }
   /* Smaller CTA gives the scrolling message more of the bar */
   .sep-banner-cta { font-size: 11px; padding: 7px 12px; }
+  .sep-banner-cta-long { display: none; }
+  .sep-banner-cta-short { display: inline; }
 }
 
 /* Phones: tighter again, the message window is the scarce space here */

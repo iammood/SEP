@@ -655,7 +655,11 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
         '<div class="sep-banner-marquee">' +
           '<div class="sep-banner-track">' + message + message + '</div>' +
         '</div>' +
-        '<a href="#devos-form" class="sep-banner-cta">Subscribe &rarr;</a>' +
+        '<a href="#devos-form" class="sep-banner-cta">' +
+          // Long label on desktop, short one on phones, swapped in CSS
+          '<span class="sep-banner-cta-long">Get monthly devotionals &rarr;</span>' +
+          '<span class="sep-banner-cta-short">Subscribe &rarr;</span>' +
+        '</a>' +
         '<button class="sep-banner-close" aria-label="Close devotional">&times;</button>' +
       '</div>';
 
