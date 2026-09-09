@@ -655,7 +655,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
         '<div class="sep-banner-marquee">' +
           '<div class="sep-banner-track">' + message + message + '</div>' +
         '</div>' +
-        '<a href="#devos-form" class="sep-banner-cta">Get monthly devotionals &rarr;</a>' +
+        '<a href="#devos-form" class="sep-banner-cta">Subscribe &rarr;</a>' +
         '<button class="sep-banner-close" aria-label="Close devotional">&times;</button>' +
       '</div>';
 
