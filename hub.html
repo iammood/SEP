@@ -159,16 +159,18 @@
         <div class="reg-form-content">
           <div class="reg-form-title">Join the waitlist</div>
           <div class="reg-form-sub">Takes less than a minute. We'll be in touch before launch.</div>
-          <form id="hub-waitlist" name="hub-waitlist" method="POST" data-netlify="true">
-            <input type="hidden" name="form-name" value="hub-waitlist">
+          <!-- Posts to the Google Apps Script Web App. The endpoint URL lives in -->
+          <!-- HUB_WAITLIST_URL at the top of js/main.js. Field names here must -->
+          <!-- match the JSON keys that handler sends. -->
+          <form id="hub-waitlist">
             <div class="form-row two">
               <div>
                 <label class="form-label">First name</label>
-                <input type="text" name="first-name" class="form-input" required placeholder="Ada">
+                <input type="text" name="firstName" class="form-input" required placeholder="Ada">
               </div>
               <div>
                 <label class="form-label">Last name</label>
-                <input type="text" name="last-name" class="form-input" required placeholder="Okafor">
+                <input type="text" name="lastName" class="form-input" required placeholder="Okafor">
               </div>
             </div>
             <div class="form-row">
@@ -176,10 +178,24 @@
               <input type="email" name="email" class="form-input" required placeholder="you@example.com">
             </div>
             <div class="form-row">
-              <label class="form-label">Business category <span style="color: var(--muted); font-weight: 400;">(optional)</span></label>
-              <input type="text" name="business-category" class="form-input" placeholder="e.g. Photography, Fashion, Consulting">
+              <label class="form-label">Phone (WhatsApp preferred)</label>
+              <input type="tel" name="phone" class="form-input" required placeholder="+234 XXX XXX XXXX">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Business category</label>
+              <select name="category" class="form-select" required>
+                <option value="">Choose your category</option>
+                <option>Creatives</option>
+                <option>Business &amp; Consulting</option>
+                <option>Tech &amp; Digital</option>
+                <option>Fashion &amp; Beauty</option>
+                <option>Food &amp; Wellness</option>
+                <option>Professional Services</option>
+                <option>Handcraft &amp; Artisans</option>
+              </select>
             </div>
             <button type="submit" class="form-submit">Join the waitlist - it's free →</button>
+            <div class="form-submit-error" id="hub-submit-error" aria-live="polite"></div>
             <div class="form-consent">Your details are used only to send you a Hub invitation. Handled per NDPR.</div>
           </form>
         </div>

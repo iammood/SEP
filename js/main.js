@@ -81,6 +81,13 @@ if (devosForm) {
   });
 }
 
+// ===== PASTE YOUR HUB WAITLIST WEB APP URL HERE =====
+// Deploy sep-hub-waitlist-script.gs as a Web App, then replace the
+// placeholder below with the /exec URL Google gives you. Until that is
+// done the form will show its error message instead of submitting.
+var HUB_WAITLIST_URL = 'https://script.google.com/macros/s/AKfycbyv6mMc4UDu6elcXeFa3rIuV0mGTc9fYCMLCHXOQ7sa-mhKtEOo8Wu3WB-IoYw0CtEZVg/exec';
+// ====================================================
+
 // Registration form — POST to Google Apps Script
 var REG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyP0sMkxCmzmNqnZ0H_0UeZrEIVeINoDjnxi7NH7xyHwhM_LvjT2gtMs5DGb6dbriNc9A/exec';
 
@@ -180,6 +187,66 @@ if (regForm) {
   });
 }
 
+// Hub Directory waitlist — POST to Google Apps Script
+// Mirrors the registration flow above: JSON body, text/plain content type so
+// the browser does not send a CORS preflight that Apps Script cannot answer.
+const hubWaitlist = document.getElementById('hub-waitlist');
+if (hubWaitlist) {
+  hubWaitlist.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var fFirstName = hubWaitlist.querySelector('[name="firstName"]');
+    var fLastName  = hubWaitlist.querySelector('[name="lastName"]');
+    var fEmail     = hubWaitlist.querySelector('[name="email"]');
+    var fPhone     = hubWaitlist.querySelector('[name="phone"]');
+    var fCategory  = hubWaitlist.querySelector('[name="category"]');
+    var submitBtn  = hubWaitlist.querySelector('.form-submit');
+    var submitErr  = document.getElementById('hub-submit-error');
+    var success    = document.getElementById('hub-waitlist-success');
+
+    if (submitErr) { submitErr.innerHTML = ''; submitErr.classList.remove('show'); }
+
+    // Stop double submits while the request is in flight
+    var origHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Joining...';
+
+    fetch(HUB_WAITLIST_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        firstName: fFirstName.value.trim(),
+        lastName:  fLastName.value.trim(),
+        email:     fEmail.value.trim(),
+        phone:     fPhone.value.trim(),
+        category:  fCategory.value
+      })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      // Already on the list counts as a win, show the same confirmation
+      if (data.result === 'success' || data.result === 'already_registered') {
+        var content = hubWaitlist.closest('.reg-form-content');
+        if (content) content.style.display = 'none';
+        if (success) {
+          success.classList.add('show');
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        throw new Error('result not success');
+      }
+    })
+    .catch(function () {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origHTML;
+      if (submitErr) {
+        submitErr.innerHTML = 'Something went wrong. Please try again, or email <a href="mailto:hello@seedempowermentprogram.com">hello@seedempowermentprogram.com</a>.';
+        submitErr.classList.add('show');
+      }
+    });
+  });
+}
+
 // Donate form (prototype)
 const donateForm = document.getElementById('donate-form');
 if (donateForm) {
@@ -221,7 +288,7 @@ function handleNotifyForm(formId, successId) {
 }
 handleNotifyForm('webinar-form', 'webinar-success');
 handleNotifyForm('career-form', 'career-success');
-handleNotifyForm('hub-waitlist', 'hub-waitlist-success');
+// hub-waitlist now posts to Google Sheets, see the handler further down
 
 // Events page Business Devotionals banner — wired to Brevo
 (function () {
