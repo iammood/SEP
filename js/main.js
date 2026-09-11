@@ -211,18 +211,40 @@ if (hubWaitlist) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = 'Joining...';
 
-    fetch(HUB_WAITLIST_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        firstName: fFirstName.value.trim(),
-        lastName:  fLastName.value.trim(),
-        email:     fEmail.value.trim(),
-        phone:     fPhone.value.trim(),
-        category:  fCategory.value
+    var payload = JSON.stringify({
+      firstName: fFirstName.value.trim(),
+      lastName:  fLastName.value.trim(),
+      email:     fEmail.value.trim(),
+      phone:     fPhone.value.trim(),
+      category:  fCategory.value
+    });
+
+    // Apps Script answers a POST with a redirect, and that second hop is
+    // unreliable: it sometimes returns an HTML error page instead of JSON, and
+    // sometimes lands on doGet and answers "ok". Both used to surface as a
+    // failure even though the row was usually written. Retrying is safe here
+    // because the script matches on email, so a repeat returns
+    // already_registered rather than adding a second row.
+    function attempt(triesLeft) {
+      return fetch(HUB_WAITLIST_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: payload
       })
-    })
-    .then(function (res) { return res.json(); })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        var done = data && (data.result === 'success' || data.result === 'already_registered');
+        if (done) return data;
+        throw new Error('unusable result: ' + (data && data.result));
+      })
+      .catch(function (err) {
+        if (triesLeft <= 1) throw err;
+        return new Promise(function (resolve) { setTimeout(resolve, 1200); })
+          .then(function () { return attempt(triesLeft - 1); });
+      });
+    }
+
+    attempt(3)
     .then(function (data) {
       // Already on the list counts as a win, show the same confirmation
       if (data.result === 'success' || data.result === 'already_registered') {

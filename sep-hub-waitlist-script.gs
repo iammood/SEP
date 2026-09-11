@@ -80,9 +80,14 @@ function jsonOut(obj) {
 
 
 /**
- * Optional. Open the Web App URL in a browser to confirm it is live.
- * Returns a plain message, it does not touch the sheet.
+ * Deliberately NOT defined: doGet.
+ *
+ * Apps Script answers a POST with a redirect, and the browser follows that
+ * second hop with a GET. When that GET lands on /exec rather than the cached
+ * result, a doGet here would answer with its own payload, and the site would
+ * read a response for a write that never happened. Leaving doGet undefined
+ * makes that path fail loudly so the retry in js/main.js re-sends the POST.
+ *
+ * To check the deployment is live, submit the form rather than opening the
+ * URL in a browser.
  */
-function doGet() {
-  return jsonOut({ result: 'ok', message: 'SEP Hub Waitlist endpoint is live.' });
-}
