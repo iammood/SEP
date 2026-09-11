@@ -88,6 +88,35 @@ if (devosForm) {
 var HUB_WAITLIST_URL = 'https://script.google.com/macros/s/AKfycbyv6mMc4UDu6elcXeFa3rIuV0mGTc9fYCMLCHXOQ7sa-mhKtEOo8Wu3WB-IoYw0CtEZVg/exec';
 // ====================================================
 
+// Shared POST for the two Google Apps Script endpoints, with retries.
+//
+// Apps Script answers a POST with a redirect and the browser follows it with a
+// GET. That second hop is unreliable: it sometimes returns Google's HTML error
+// page instead of JSON, and sometimes lands somewhere that never ran the write.
+// Measured from production, roughly one submit in three came back unusable.
+//
+// Retrying is safe because both scripts match on email, so a repeat returns
+// already_registered rather than writing a second row.
+function postToAppsScript(url, payload, triesLeft) {
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: payload
+  })
+  .then(function (res) { return res.json(); })
+  .then(function (data) {
+    if (data && (data.result === 'success' || data.result === 'already_registered')) {
+      return data;
+    }
+    throw new Error('unusable result: ' + (data && data.result));
+  })
+  .catch(function (err) {
+    if (triesLeft <= 1) throw err;
+    return new Promise(function (resolve) { setTimeout(resolve, 1200); })
+      .then(function () { return postToAppsScript(url, payload, triesLeft - 1); });
+  });
+}
+
 // Registration form — POST to Google Apps Script
 var REG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyP0sMkxCmzmNqnZ0H_0UeZrEIVeINoDjnxi7NH7xyHwhM_LvjT2gtMs5DGb6dbriNc9A/exec';
 
@@ -141,19 +170,14 @@ if (regForm) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = 'Reserving...';
 
-    fetch(REG_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        firstName:  fFirstName.value.trim(),
-        lastName:   fLastName.value.trim(),
-        email:      fEmail.value.trim(),
-        phone:      fPhone.value.trim(),
-        skillTrack: fTrack.value,
-        heardAbout: fHeard.value
-      })
-    })
-    .then(function (res) { return res.json(); })
+    postToAppsScript(REG_ENDPOINT, JSON.stringify({
+      firstName:  fFirstName.value.trim(),
+      lastName:   fLastName.value.trim(),
+      email:      fEmail.value.trim(),
+      phone:      fPhone.value.trim(),
+      skillTrack: fTrack.value,
+      heardAbout: fHeard.value
+    }), 3)
     .then(function (data) {
       var content = document.querySelector('.reg-form-content');
       if (data.result === 'success') {
@@ -219,32 +243,7 @@ if (hubWaitlist) {
       category:  fCategory.value
     });
 
-    // Apps Script answers a POST with a redirect, and that second hop is
-    // unreliable: it sometimes returns an HTML error page instead of JSON, and
-    // sometimes lands on doGet and answers "ok". Both used to surface as a
-    // failure even though the row was usually written. Retrying is safe here
-    // because the script matches on email, so a repeat returns
-    // already_registered rather than adding a second row.
-    function attempt(triesLeft) {
-      return fetch(HUB_WAITLIST_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: payload
-      })
-      .then(function (res) { return res.json(); })
-      .then(function (data) {
-        var done = data && (data.result === 'success' || data.result === 'already_registered');
-        if (done) return data;
-        throw new Error('unusable result: ' + (data && data.result));
-      })
-      .catch(function (err) {
-        if (triesLeft <= 1) throw err;
-        return new Promise(function (resolve) { setTimeout(resolve, 1200); })
-          .then(function () { return attempt(triesLeft - 1); });
-      });
-    }
-
-    attempt(3)
+    postToAppsScript(HUB_WAITLIST_URL, payload, 3)
     .then(function (data) {
       // Already on the list counts as a win, show the same confirmation
       if (data.result === 'success' || data.result === 'already_registered') {
