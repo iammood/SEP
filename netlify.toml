@@ -11,3 +11,34 @@
   to     = "https://www.seedempowermentprogram.com/:splat"
   status = 301
   force  = true
+
+# Keep source and documentation files off the public site. They still ship
+# with the deploy, this only stops them being served. Nothing on the site
+# links to a .md or .gs file, so no page is affected.
+# Note: the GitHub repo is public, so this is tidiness, not access control.
+# Netlify's splat only works as a trailing wildcard, so "/*.md" never matches.
+# Each file is listed explicitly, and force is required because a real file on
+# disk otherwise wins over a redirect rule.
+[[redirects]]
+  from   = "/README.md"
+  to     = "/404.html"
+  status = 404
+  force  = true
+
+[[redirects]]
+  from   = "/CLAUDE.md"
+  to     = "/404.html"
+  status = 404
+  force  = true
+
+[[redirects]]
+  from   = "/gallery/README.md"
+  to     = "/404.html"
+  status = 404
+  force  = true
+
+[[redirects]]
+  from   = "/sep-hub-waitlist-script.gs"
+  to     = "/404.html"
+  status = 404
+  force  = true
