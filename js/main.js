@@ -81,19 +81,25 @@ if (devosForm) {
   });
 }
 
-// ===== PASTE YOUR HUB WAITLIST WEB APP URL HERE =====
-// Deploy sep-hub-waitlist-script.gs as a Web App, then replace the
-// placeholder below with the /exec URL Google gives you. Until that is
-// done the form will show its error message instead of submitting.
-var HUB_WAITLIST_URL = 'https://script.google.com/macros/s/AKfycbyv6mMc4UDu6elcXeFa3rIuV0mGTc9fYCMLCHXOQ7sa-mhKtEOo8Wu3WB-IoYw0CtEZVg/exec';
-// ====================================================
-
-// Shared POST for the two Google Apps Script endpoints, with retries.
+// ===== HUB WAITLIST ENDPOINT =====
+// The browser posts to our own site, not to Google. The Google Apps Script
+// /exec URL now lives in netlify/functions/hub-waitlist.js, which forwards
+// the submission on from the server.
 //
-// Apps Script answers a POST with a redirect and the browser follows it with a
+// Why: posting personal details straight to script.google.com matched
+// Chrome's Safe Browsing phishing pattern and put a warning on the site.
+// If you redeploy the Apps Script, update the URL in that function file.
+var HUB_WAITLIST_URL = '/.netlify/functions/hub-waitlist';
+// =================================
+
+// Shared POST for the two form endpoints, with retries.
+//
+// Apps Script answers a POST with a redirect and the caller follows it with a
 // GET. That second hop is unreliable: it sometimes returns Google's HTML error
 // page instead of JSON, and sometimes lands somewhere that never ran the write.
 // Measured from production, roughly one submit in three came back unusable.
+// The relay functions pass that bad answer back as result: error, so the retry
+// below still catches it.
 //
 // Retrying is safe because both scripts match on email, so a repeat returns
 // already_registered rather than writing a second row.
@@ -117,8 +123,10 @@ function postToAppsScript(url, payload, triesLeft) {
   });
 }
 
-// Registration form — POST to Google Apps Script
-var REG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyP0sMkxCmzmNqnZ0H_0UeZrEIVeINoDjnxi7NH7xyHwhM_LvjT2gtMs5DGb6dbriNc9A/exec';
+// Registration form — posts to our own site, not to Google. The Apps Script
+// /exec URL now lives in netlify/functions/register.js, which forwards the
+// submission on from the server. Same reason as the Hub waitlist above.
+var REG_ENDPOINT = '/.netlify/functions/register';
 
 const regForm = document.getElementById('registration-form');
 const regSuccess = document.getElementById('success');
@@ -211,9 +219,9 @@ if (regForm) {
   });
 }
 
-// Hub Directory waitlist — POST to Google Apps Script
-// Mirrors the registration flow above: JSON body, text/plain content type so
-// the browser does not send a CORS preflight that Apps Script cannot answer.
+// Hub Directory waitlist — POST to our own relay function, which forwards to
+// Google Apps Script. Mirrors the registration flow above: same JSON body,
+// same retry, same success and already_registered handling.
 const hubWaitlist = document.getElementById('hub-waitlist');
 if (hubWaitlist) {
   hubWaitlist.addEventListener('submit', function (e) {
