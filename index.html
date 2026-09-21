@@ -734,6 +734,33 @@
             <input type="tel" name="phone" class="form-input" required placeholder="+234 XXX XXX XXXX">
             <div class="form-field-error" aria-live="polite"></div>
           </div>
+          <!-- Gender and age sit side by side on desktop and stack under 500px.
+               Both are required. Age is collected as a band, not an exact age,
+               and starts at 16 because SEP is open to 16 and older. -->
+          <div class="form-row two">
+            <div>
+              <label class="form-label">Gender</label>
+              <select name="gender" class="form-select" required>
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+              <div class="form-field-error" aria-live="polite"></div>
+            </div>
+            <div>
+              <label class="form-label">Age</label>
+              <select name="ageRange" class="form-select" required>
+                <option value="">Select your age range</option>
+                <option>16 - 20</option>
+                <option>21 - 25</option>
+                <option>26 - 30</option>
+                <option>31 - 40</option>
+                <option>41 - 50</option>
+                <option>51 and above</option>
+              </select>
+              <div class="form-field-error" aria-live="polite"></div>
+            </div>
+          </div>
           <div class="form-row">
             <label class="form-label">Which skill track?</label>
             <select name="skillTrack" class="form-select" required>

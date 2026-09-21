@@ -47,13 +47,15 @@ exports.handler = async function (event) {
 
   // Parse body. The browser sends text/plain, so read event.body directly
   // rather than trusting a content type.
-  let firstName, lastName, email, phone, skillTrack, heardAbout;
+  let firstName, lastName, email, phone, gender, ageRange, skillTrack, heardAbout;
   try {
     const body = JSON.parse(event.body || '{}');
     firstName  = String(body.firstName  || '').trim();
     lastName   = String(body.lastName   || '').trim();
     email      = String(body.email      || '').trim();
     phone      = String(body.phone      || '').trim();
+    gender     = String(body.gender     || '').trim();
+    ageRange   = String(body.ageRange   || '').trim();
     skillTrack = String(body.skillTrack || '').trim();
     heardAbout = String(body.heardAbout || '').trim();
   } catch (_) {
@@ -68,10 +70,14 @@ exports.handler = async function (event) {
 
   const appsScriptUrl = process.env.REG_ENDPOINT || DEFAULT_APPS_SCRIPT_URL;
 
-  // Rebuild the payload from the six known fields. Forwarding event.body
+  // Rebuild the payload from the eight known fields. Forwarding event.body
   // as-is would let anyone use this function to post anything they like to
   // the Google endpoint.
-  const payload = JSON.stringify({ firstName, lastName, email, phone, skillTrack, heardAbout });
+  //
+  // gender and ageRange are passed through but not required here. The form
+  // requires them, and leaving the check in one place means an older cached
+  // copy of js/main.js can still register someone rather than failing.
+  const payload = JSON.stringify({ firstName, lastName, email, phone, gender, ageRange, skillTrack, heardAbout });
 
   const controller = new AbortController();
   const timer = setTimeout(function () { controller.abort(); }, TIMEOUT_MS);

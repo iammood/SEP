@@ -103,13 +103,37 @@ var HUB_WAITLIST_URL = '/.netlify/functions/hub-waitlist';
 //
 // Retrying is safe because both scripts match on email, so a repeat returns
 // already_registered rather than writing a second row.
-function postToAppsScript(url, payload, triesLeft) {
+//
+// Two different delays, and the reason matters. A 504 from the relay means the
+// relay gave up waiting on Apps Script, which happens on a cold start. The
+// script keeps running on Google's side and usually finishes the write anyway.
+// Apps Script also queues a second execution behind one still running, so a
+// quick retry just queues up and times out as well. Measured: a cold start
+// runs past 9 seconds, while a warm write takes about 4.6 and a duplicate
+// check about 1.9. Waiting 6 seconds lets the stuck execution finish, so the
+// retry lands on the fast duplicate check and confirms the row exists.
+var RETRY_DELAY_MS = 1200;
+var RETRY_DELAY_AFTER_TIMEOUT_MS = 6000;
+
+// state is optional. Pass an object to find out afterwards whether any attempt
+// timed out, which tells the caller that an already_registered on a later
+// attempt is really its own write completing rather than a prior signup.
+function postToAppsScript(url, payload, triesLeft, state) {
+  state = state || {};
+  var timedOutThisAttempt = false;
+
   return fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: payload
   })
-  .then(function (res) { return res.json(); })
+  .then(function (res) {
+    if (res.status === 504) {
+      timedOutThisAttempt = true;
+      state.timedOut = true;
+    }
+    return res.json();
+  })
   .then(function (data) {
     if (data && (data.result === 'success' || data.result === 'already_registered')) {
       return data;
@@ -118,8 +142,9 @@ function postToAppsScript(url, payload, triesLeft) {
   })
   .catch(function (err) {
     if (triesLeft <= 1) throw err;
-    return new Promise(function (resolve) { setTimeout(resolve, 1200); })
-      .then(function () { return postToAppsScript(url, payload, triesLeft - 1); });
+    var wait = timedOutThisAttempt ? RETRY_DELAY_AFTER_TIMEOUT_MS : RETRY_DELAY_MS;
+    return new Promise(function (resolve) { setTimeout(resolve, wait); })
+      .then(function () { return postToAppsScript(url, payload, triesLeft - 1, state); });
   });
 }
 
@@ -138,6 +163,8 @@ if (regForm) {
     var fLastName  = regForm.querySelector('[name="lastName"]');
     var fEmail     = regForm.querySelector('[name="email"]');
     var fPhone     = regForm.querySelector('[name="phone"]');
+    var fGender    = regForm.querySelector('[name="gender"]');
+    var fAgeRange  = regForm.querySelector('[name="ageRange"]');
     var fTrack     = regForm.querySelector('[name="skillTrack"]');
     var fHeard     = regForm.querySelector('[name="heardAbout"]');
     var submitBtn  = regForm.querySelector('.form-submit');
@@ -170,6 +197,8 @@ if (regForm) {
       fieldError(fEmail, 'Enter a valid email address.');
     }
     if (!fPhone.value.trim()) fieldError(fPhone, 'Phone number is required.');
+    if (fGender && !fGender.value)   fieldError(fGender,   'Please select your gender.');
+    if (fAgeRange && !fAgeRange.value) fieldError(fAgeRange, 'Please select your age range.');
 
     if (!valid) return;
 
@@ -178,16 +207,32 @@ if (regForm) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = 'Reserving...';
 
+    // Tracks whether any attempt timed out, so an already_registered on a
+    // later attempt can be told apart from a genuine prior signup.
+    var regState = {};
+
     postToAppsScript(REG_ENDPOINT, JSON.stringify({
       firstName:  fFirstName.value.trim(),
       lastName:   fLastName.value.trim(),
       email:      fEmail.value.trim(),
       phone:      fPhone.value.trim(),
+      gender:     fGender ? fGender.value : '',
+      ageRange:   fAgeRange ? fAgeRange.value : '',
       skillTrack: fTrack.value,
       heardAbout: fHeard.value
-    }), 3)
+    }), 3, regState)
     .then(function (data) {
       var content = document.querySelector('.reg-form-content');
+
+      // A cold start can time out mid-write, and the write still lands. The
+      // retry then reads that row back as already_registered. That is this
+      // submission completing, not someone who signed up earlier, so show the
+      // normal confirmation rather than telling a first-time registrant they
+      // are already on the list.
+      if (data.result === 'already_registered' && regState.timedOut) {
+        data = { result: 'success' };
+      }
+
       if (data.result === 'success') {
         if (content) content.style.display = 'none';
         if (regSuccess) {
