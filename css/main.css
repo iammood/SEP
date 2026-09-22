@@ -3741,3 +3741,70 @@ img { max-width: 100%; display: block; }
   .date-card-label::before { animation: none; }
   .fade-in { transition: none; opacity: 1; transform: none; }
 }
+
+/* ============ COMING SOON OVERLAY (blog page) ============ */
+/* Wraps placeholder content that is not ready to be read. The content stays in
+   the page so it is easy to switch on later, but it is dimmed, unclickable and
+   hidden from screen readers. No blur filter here on purpose: blurring an area
+   this tall is expensive on a cheap phone, so it dims instead. */
+.coming-soon {
+  position: relative;
+}
+.coming-soon-behind {
+  opacity: 0.22;
+  pointer-events: none;
+  user-select: none;
+  filter: grayscale(0.6);
+}
+/* A wash over the top as well as dimming underneath. The posts behind are
+   placeholder text by invented authors, so they need to be clearly unreadable
+   rather than merely faint. */
+.coming-soon-veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 24px;
+  background: rgba(250, 248, 241, 0.55);
+}
+/* Sticky so the message follows the reader down the dimmed area rather than
+   sitting in the middle of it where it can be scrolled past. */
+.coming-soon-card {
+  position: sticky;
+  top: 26vh;
+  align-self: flex-start;
+  margin-top: 80px;
+  max-width: 520px;
+  text-align: center;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: 0 32px 64px -28px rgba(15, 62, 29, 0.3);
+}
+.coming-soon-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber-deep);
+  margin-bottom: 14px;
+}
+.coming-soon-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 500;
+  color: var(--forest-deep);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+.coming-soon-text {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .coming-soon-card { padding: 32px 24px; top: 20vh; }
+}
