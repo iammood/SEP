@@ -415,7 +415,7 @@ if (interest2027Form) {
         alreadyMsg.innerHTML =
           '<div class="success-icon">✓</div>' +
           '<h4>You are already on the SEP 2027 list.</h4>' +
-          '<p>No need to sign up again. We will be in touch as soon as the dates and venue are confirmed.</p>';
+          '<p>No need to sign up again. We will be in touch as soon as the dates are confirmed.</p>';
         if (content) content.parentNode.appendChild(alreadyMsg);
         alreadyMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
