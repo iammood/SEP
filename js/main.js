@@ -321,6 +321,118 @@ if (hubWaitlist) {
   });
 }
 
+// SEP 2027 early interest form (2027.html). Separate from the SEP 2026
+// registration above: its own relay, its own Apps Script, its own Sheet.
+// Same field checks and the same 3-try retry as the 2026 form, minus the
+// skill track, which only applies to 2026.
+var INTEREST_2027_ENDPOINT = '/.netlify/functions/register-2027';
+
+const interest2027Form = document.getElementById('interest-2027-form');
+if (interest2027Form) {
+  interest2027Form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var form       = interest2027Form;
+    var fFirstName = form.querySelector('[name="firstName"]');
+    var fLastName  = form.querySelector('[name="lastName"]');
+    var fEmail     = form.querySelector('[name="email"]');
+    var fPhone     = form.querySelector('[name="phone"]');
+    var fGender    = form.querySelector('[name="gender"]');
+    var fAgeRange  = form.querySelector('[name="ageRange"]');
+    var fHeard     = form.querySelector('[name="heardAbout"]');
+    var submitBtn  = form.querySelector('.form-submit');
+    var submitErr  = document.getElementById('interest-2027-submit-error');
+    var success    = document.getElementById('interest-2027-success');
+
+    // Clear previous error states
+    form.querySelectorAll('.form-field-error').forEach(function (el) {
+      el.textContent = '';
+      el.classList.remove('show');
+    });
+    form.querySelectorAll('.is-error').forEach(function (el) {
+      el.classList.remove('is-error');
+    });
+    if (submitErr) { submitErr.innerHTML = ''; submitErr.classList.remove('show'); }
+
+    // Inline field validation
+    var valid = true;
+    function fieldError(input, msg) {
+      valid = false;
+      input.classList.add('is-error');
+      var el = input.parentElement.querySelector('.form-field-error');
+      if (el) { el.textContent = msg; el.classList.add('show'); }
+    }
+
+    if (!fFirstName.value.trim()) fieldError(fFirstName, 'First name is required.');
+    if (!fLastName.value.trim())  fieldError(fLastName,  'Last name is required.');
+    if (!fEmail.value.trim()) {
+      fieldError(fEmail, 'Email address is required.');
+    } else if (!fEmail.value.includes('@')) {
+      fieldError(fEmail, 'Enter a valid email address.');
+    }
+    if (!fPhone.value.trim())  fieldError(fPhone,    'Phone number is required.');
+    if (!fGender.value)        fieldError(fGender,   'Please select your gender.');
+    if (!fAgeRange.value)      fieldError(fAgeRange, 'Please select your age range.');
+
+    if (!valid) return;
+
+    // Disable button while in flight
+    var origHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Adding you...';
+
+    // Tracks whether any attempt timed out, same reason as the 2026 form
+    var interestState = {};
+
+    postToAppsScript(INTEREST_2027_ENDPOINT, JSON.stringify({
+      firstName:  fFirstName.value.trim(),
+      lastName:   fLastName.value.trim(),
+      email:      fEmail.value.trim(),
+      phone:      fPhone.value.trim(),
+      gender:     fGender.value,
+      ageRange:   fAgeRange.value,
+      heardAbout: fHeard.value
+    }), 3, interestState)
+    .then(function (data) {
+      var content = form.closest('.reg-form-content');
+
+      // A timed-out attempt that later reads back already_registered is this
+      // submission's own row landing, so show the normal confirmation.
+      if (data.result === 'already_registered' && interestState.timedOut) {
+        data = { result: 'success' };
+      }
+
+      if (data.result === 'success') {
+        if (content) content.style.display = 'none';
+        if (success) {
+          success.classList.add('show');
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else if (data.result === 'already_registered') {
+        if (content) content.style.display = 'none';
+        var alreadyMsg = document.createElement('div');
+        alreadyMsg.className = 'success-msg show';
+        alreadyMsg.innerHTML =
+          '<div class="success-icon">✓</div>' +
+          '<h4>You are already on the SEP 2027 list.</h4>' +
+          '<p>No need to sign up again. We will be in touch as soon as the dates and venue are confirmed.</p>';
+        if (content) content.parentNode.appendChild(alreadyMsg);
+        alreadyMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        throw new Error('result not success');
+      }
+    })
+    .catch(function () {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origHTML;
+      if (submitErr) {
+        submitErr.innerHTML = 'Something went wrong. Please try again, or email <a href="mailto:hello@seedempowermentprogram.com">hello@seedempowermentprogram.com</a>.';
+        submitErr.classList.add('show');
+      }
+    });
+  });
+}
+
 // Donate form (prototype)
 const donateForm = document.getElementById('donate-form');
 if (donateForm) {

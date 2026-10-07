@@ -36,6 +36,15 @@ Design is driven by CSS custom properties defined once at the top — brand gree
 - Registration wired to a Google Apps Script endpoint
 - Hosted on Netlify (with a 301 redirect from the Netlify subdomain to the canonical domain)
 
+### SEP 2027 early interest list
+
+`2027.html` (served at `/2027`) collects early interest for SEP 2027. It is separate from the SEP 2026 registration:
+
+- Form handler: the SEP 2027 block in `js/main.js`
+- Relay: `netlify/functions/register-2027.js`
+- Apps Script: `register-2027.gs`, writing to its own Google Sheet (columns: Timestamp, First name, Last name, Email, Phone, Gender, Age Range, How Heard)
+- Netlify environment variable `SEP_2027_SCRIPT_URL`: the `/exec` URL of the deployed `register-2027.gs` Web App. Required. Until it is set, the form shows an error on submit.
+
 ### Previewing locally
 
 No build step and no server needed — open index.html in a browser.

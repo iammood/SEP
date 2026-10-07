@@ -3808,3 +3808,21 @@ img { max-width: 100%; display: block; }
 @media (max-width: 600px) {
   .coming-soon-card { padding: 32px 24px; top: 20vh; }
 }
+
+/* ============ SEP 2027 LINK (homepage) ============ */
+/* Thin strip below the register section pointing to 2027.html.
+   To remove it, delete the SEP 2027 LINK block in index.html. */
+.sep-2027-strip {
+  padding: 22px 0;
+  background: var(--paper-warm);
+  text-align: center;
+  font-size: 15px;
+  color: var(--muted);
+}
+.sep-2027-strip a {
+  color: var(--forest);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sep-2027-strip a:hover { color: var(--forest-deep); }
